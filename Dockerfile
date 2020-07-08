@@ -10,16 +10,12 @@ RUN apt update && \
 	git \
 	gnupg2
 
-RUN curl -sSL http://get.gazebosim.org | sh
-
-RUN cd $SOURCE_FOLDER && \
-     git clone https://github.com/event-driven-robotics/gazebo-yarp-plugins.git && \
-     cd gazebo-yarp-plugins && \
-     git checkout $GAZEBO_YARP_PLUGINS_BRANCH && \
-     mkdir build && \
-     cd build/ && \
-     cmake .. && \
-     make -j 8 install
+RUN echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list && \
+     wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add - && \
+     apt update && \
+     apt install -y \
+     gazebo9 \
+     libgazebo9-dev
 
 RUN cd $SOURCE_FOLDER && \
      git clone https://github.com/robotology/icub-main.git && \
@@ -31,9 +27,20 @@ RUN cd $SOURCE_FOLDER && \
      make -j 8 install
 
 RUN cd $SOURCE_FOLDER && \
+     git clone https://github.com/event-driven-robotics/gazebo-yarp-plugins.git && \
+     cd gazebo-yarp-plugins && \
+     git checkout $GAZEBO_YARP_PLUGINS_BRANCH && \
+     mkdir build && \
+     cd build/ && \
+     cmake .. && \
+     make -j 8 install
+
+RUN cd $SOURCE_FOLDER && \
      git clone https://github.com/robotology/icub-gazebo.git && \
      cd icub-gazebo && \
-     git checkout v$ICUB_MAIN_VERSION && \
+     git remote add experimental https://github.com/xenvre/icub-gazebo.git && \
+     git fetch experimental && \
+     git checkout impl/fingers && \
      mkdir build && \
      cd build/ && \
      cmake .. && \
@@ -41,8 +48,9 @@ RUN cd $SOURCE_FOLDER && \
 
 
 RUN cd $SOURCE_FOLDER && \
-     git clone https://github.com/robotology/vision-based-manipulation-simulation.git && \
+     git clone https://github.com/xEnVrE/vision-based-manipulation-simulation.git && \
      cd vision-based-manipulation-simulation && \
+     git checkout old_icub_gazebo && \
      mkdir build && \
      cd build/ && \
      cmake .. && \
