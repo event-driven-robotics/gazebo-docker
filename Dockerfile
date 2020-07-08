@@ -29,3 +29,21 @@ RUN cd $SOURCE_FOLDER && \
      cd build/ && \
      cmake .. && \
      make -j 8 install
+
+RUN cd $SOURCE_FOLDER && \
+     git clone https://github.com/robotology/icub-gazebo.git && \
+     cd icub-gazebo && \
+     git checkout v$ICUB_MAIN_VERSION && \
+     mkdir build && \
+     cd build/ && \
+     cmake .. && \
+     make -j 8 install
+
+
+RUN cd $SOURCE_FOLDER && \
+     git clone https://github.com/robotology/vision-based-manipulation-simulation.git && \
+     cd vision-based-manipulation-simulation && \
+     mkdir build && \
+     cd build/ && \
+     cmake .. && \
+     make -j 8 install
