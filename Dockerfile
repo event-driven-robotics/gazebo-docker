@@ -24,7 +24,7 @@ RUN cd $SOURCE_FOLDER && \
      mkdir build && \
      cd build/ && \
      cmake .. && \
-     make -j 8 install
+     make -j `nproc` install
 
 RUN cd $SOURCE_FOLDER && \
      git clone https://github.com/event-driven-robotics/gazebo-yarp-plugins.git && \
@@ -33,7 +33,7 @@ RUN cd $SOURCE_FOLDER && \
      mkdir build && \
      cd build/ && \
      cmake .. && \
-     make -j 8 install
+     make -j `nproc` install
 
 RUN cd $SOURCE_FOLDER && \
      git clone https://github.com/robotology/icub-gazebo.git && \
@@ -44,7 +44,7 @@ RUN cd $SOURCE_FOLDER && \
      mkdir build && \
      cd build/ && \
      cmake .. && \
-     make -j 8 install
+     make -j `nproc` install
 
 
 RUN cd $SOURCE_FOLDER && \
@@ -54,4 +54,6 @@ RUN cd $SOURCE_FOLDER && \
      mkdir build && \
      cd build/ && \
      cmake .. && \
-     make -j 8 install
+     make -j `nproc` install
+
+ENV GAZEBO_MODEL_PATH /usr/local/share/gazebo/models
