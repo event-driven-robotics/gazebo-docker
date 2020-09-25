@@ -1,4 +1,4 @@
-ARG FROM=eventdrivenrobotics/yarp:focal_v3.4.0_opengl
+ARG FROM=eventdrivenrobotics/yarp:focal_v3.4.0
 
 FROM $FROM
 
