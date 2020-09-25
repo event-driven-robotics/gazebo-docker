@@ -1,8 +1,10 @@
-FROM eventdrivenrobotics/yarp:v3.3.2
+ARG FROM=eventdrivenrobotics/yarp:focal_v3.4.0_opengl
+
+FROM $FROM
 
 ARG SOURCE_FOLDER=/usr/local/src
-ARG GAZEBO_YARP_PLUGINS_BRANCH=event-driven-skin
-ARG ICUB_MAIN_VERSION=1.16.0
+ARG GAZEBO_YARP_PLUGINS_BRANCH=v3.5.0
+ARG ICUB_MAIN_VERSION=1.17.0
 
 RUN apt update && \
 	apt install -y \
@@ -27,7 +29,7 @@ RUN cd $SOURCE_FOLDER && \
      make -j `nproc` install
 
 RUN cd $SOURCE_FOLDER && \
-     git clone https://github.com/event-driven-robotics/gazebo-yarp-plugins.git && \
+     git clone https://github.com/robotology/gazebo-yarp-plugins.git && \
      cd gazebo-yarp-plugins && \
      git checkout $GAZEBO_YARP_PLUGINS_BRANCH && \
      mkdir build && \
@@ -36,24 +38,14 @@ RUN cd $SOURCE_FOLDER && \
      make -j `nproc` install
 
 RUN cd $SOURCE_FOLDER && \
-     git clone https://github.com/robotology/icub-gazebo.git && \
-     cd icub-gazebo && \
-     git remote add experimental https://github.com/xenvre/icub-gazebo.git && \
-     git fetch experimental && \
-     git checkout impl/fingers && \
+     git clone https://github.com/robotology/icub-models.git && \
+     cd icub-models && \
+     git checkout v$ICUB_MAIN_VERSION && \
      mkdir build && \
      cd build/ && \
      cmake .. && \
      make -j `nproc` install
 
-
-RUN cd $SOURCE_FOLDER && \
-     git clone https://github.com/xEnVrE/vision-based-manipulation-simulation.git && \
-     cd vision-based-manipulation-simulation && \
-     git checkout old_icub_gazebo && \
-     mkdir build && \
-     cd build/ && \
-     cmake .. && \
-     make -j `nproc` install
-
-ENV GAZEBO_MODEL_PATH /usr/local/share/gazebo/models
+COPY models /usr/local/share/models
+COPY worlds /usr/local/share/worlds
+ENV GAZEBO_MODEL_PATH /usr/local/share/:/usr/local/share/models
