@@ -17,7 +17,10 @@ RUN echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_releas
      apt update && \
      apt install -y \
      gazebo9 \
-     libgazebo9-dev
+     libgazebo9-dev \
+     && apt-get autoremove \
+     && apt-get clean \
+     && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
 
 RUN cd $SOURCE_FOLDER && \
      git clone https://github.com/robotology/icub-main.git && \
