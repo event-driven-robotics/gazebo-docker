@@ -1,4 +1,4 @@
-ARG FROM=eventdrivenrobotics/yarp:focal_v3.4.0_opengl
+ARG FROM=eventdrivenrobotics/yarp:focal_v3.4.1_opengl
 
 FROM $FROM
 
@@ -12,6 +12,8 @@ RUN apt update && \
 	git \
 	gnupg2 \
      coinor-libipopt-dev \
+     openssh-server \
+     openssh-client \
      && apt-get autoremove \
      && apt-get clean \
      && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
