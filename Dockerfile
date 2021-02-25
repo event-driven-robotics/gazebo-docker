@@ -3,8 +3,9 @@ ARG FROM=eventdrivenrobotics/yarp:focal_v3.4.1_opengl
 FROM $FROM
 
 ARG SOURCE_FOLDER=/usr/local/src
-ARG GAZEBO_YARP_PLUGINS_BRANCH=v3.5.0
-ARG ICUB_MAIN_VERSION=1.17.0
+ARG GAZEBO_YARP_PLUGINS_BRANCH=v3.6.0
+ARG ICUB_MAIN_VERSION=v1.18.0
+ARG ICUB_MODELS_VERSION=v1.19.0
 
 RUN apt update && \
 	apt install -y \
@@ -14,10 +15,12 @@ RUN apt update && \
      coinor-libipopt-dev \
      openssh-server \
      openssh-client \
+     libtinyxml-dev \
      && apt-get autoremove \
      && apt-get clean \
      && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
 
+RUN cd $SOURCE_FOLDER/yarp/build && cmake .. && make -j `nproc` install
 
 RUN echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list && \
      wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add - && \
@@ -32,7 +35,7 @@ RUN echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_releas
 RUN cd $SOURCE_FOLDER && \
      git clone https://github.com/robotology/icub-main.git && \
      cd icub-main && \
-     git checkout v$ICUB_MAIN_VERSION && \
+     git checkout $ICUB_MAIN_VERSION && \
      mkdir build && \
      cd build/ && \
      cmake .. -DENABLE_icubmod_cartesiancontrollerclient=ON \
@@ -52,7 +55,7 @@ RUN cd $SOURCE_FOLDER && \
 RUN cd $SOURCE_FOLDER && \
      git clone https://github.com/robotology/icub-models.git && \
      cd icub-models && \
-     git checkout v$ICUB_MAIN_VERSION && \
+     git checkout $ICUB_MODELS_VERSION && \
      mkdir build && \
      cd build/ && \
      cmake .. && \
@@ -61,5 +64,6 @@ RUN cd $SOURCE_FOLDER && \
 COPY models /usr/local/share/models
 COPY worlds /usr/local/share/worlds
 ENV GAZEBO_MODEL_PATH /usr/local/share/:/usr/local/share/models
+ENV GAZEBO_PLUGIN_PATH /usr/local/lib
 
 COPY actionsRenderingEngineGazebo.xml /usr/local/share/yarp/applications/
