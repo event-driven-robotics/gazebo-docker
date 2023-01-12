@@ -1,11 +1,11 @@
-ARG FROM=eventdrivenrobotics/event-driven:focal_yarp_v3.4.1_ed_v1.5_opengl
+ARG FROM=eventdrivenrobotics/yarp:jammy_v3.7.2
 
 FROM $FROM
 
 ARG SOURCE_FOLDER=/usr/local/src
-ARG GAZEBO_YARP_PLUGINS_BRANCH=v3.6.0
-ARG ICUB_MAIN_VERSION=v1.18.0
-ARG ICUB_MODELS_VERSION=v1.19.0
+ARG GAZEBO_YARP_PLUGINS_BRANCH=v4.5.2
+ARG ICUB_MAIN_VERSION=v2.0.2
+ARG ICUB_MODELS_VERSION=v1.26.0
 
 RUN apt update && \
 	apt install -y \
@@ -22,15 +22,7 @@ RUN apt update && \
 
 RUN cd $SOURCE_FOLDER/yarp/build && cmake .. && make -j `nproc` install
 
-RUN echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list && \
-     wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add - && \
-     apt update && \
-     apt install -y \
-     gazebo9 \
-     libgazebo9-dev \
-     && apt-get autoremove \
-     && apt-get clean \
-     && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
+RUN curl -sSL http://get.gazebosim.org | sh
 
 RUN cd $SOURCE_FOLDER && \
      git clone https://github.com/robotology/icub-main.git && \
@@ -63,7 +55,7 @@ RUN cd $SOURCE_FOLDER && \
 
 COPY models /usr/local/share/models
 COPY worlds /usr/local/share/worlds
-ENV GAZEBO_MODEL_PATH /usr/local/share/:/usr/local/share/models
+ENV GAZEBO_MODEL_PATH /usr/local/share/iCub/robots/:/usr/local/share/:/usr/local/share/models
 ENV GAZEBO_PLUGIN_PATH /usr/local/lib
 
 COPY actionsRenderingEngineGazebo.xml /usr/local/share/yarp/applications/
